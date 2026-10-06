@@ -1,0 +1,25 @@
+PTY_TYPE_ID,PTY_TYPE_NAME,PTY_TYPE_ALIAS,PTY_TYPE_DESC,PTY_TYPE_STATUS
+101,Alloy Purchase Party,ALPP,Alloy Purchase Party,New
+102,Gold Artisan,GLDAR,Gold Artisan,New
+103,Silver Artisan,SLVAR,Silver Artisan,New
+104,Gold InHouse Artisan,GLDIA,Gold InHouse Artisan,New
+105,Gold Bullion Supplier,GBSUP,Gold Bullion Supplier,New
+106,Silver Bullion Supplier,SBSUP,Silver Bullion Supplier,New
+107,Gold Ornament Supplier,GORNP,Gold Ornament Supplier,New
+108,Silver Ornament Supplier,SORNP,Silver Ornament Supplier,New
+109,Gold Branded Ornament Supplier,GBORN,Gold Branded Ornament Supplier,New
+110,Gold Precious Stone Ornament Artisan,GPSOA,Gold Precious Stone Ornament Artisan,New
+111,Gold Branded Precious Stone Ornament Supplier,GBPSO,Gold Branded Precious Stone Ornament Supplier,New
+112,Gold Refiner,GLDRF,Gold Refiner,New
+113,Silver Refiner,SLVRF,Silver Refiner,New
+114,Gold Hallmarking Party,GLDHP,Gold Hallmarking Party,New
+115,Silver Hallmarking Party,SLVHP,Silver Hallmarking Party,New
+116,Precious Stone Supplier,PRSSU,Precious Stone Supplier,New
+117,Accessories Supplier,ACCSU,Accessories Supplier,New
+118,Employee,EMP,Employee,New
+119,Gold Precious Stone Ornament Supplier,GPSOS,Gold Precious Stone Ornament Supplier,New
+120,Tax Invoice,TXINV,Tax Invoice,New
+122,1Gram Artisan,1GM,1Gram Artisan,Modified
+123,Ear Piercing,EPS,,New
+124,Advance Receive,AD,Advance Receive,New
+125,Credit,CRDT,CREDIT,New

@@ -1,0 +1,5 @@
+ROLE_ID,ROLE_NAME,ROLE_DESC,ROLE_STATUS
+101,Vendor,Sagacity Infotech,New
+102,Administrator,,New
+103,Manager,,New
+104,General User,,New

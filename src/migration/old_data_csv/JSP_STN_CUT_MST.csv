@@ -1,0 +1,8 @@
+CUT_ID,CUT_NAME,CUT_ALIAS,STN_ID,CUT_DESC,CUT_STATUS
+101,Excellent,EX,0,Excellent,New
+102,Ideal,ID,0,Ideal,New
+103,Very Good,VG,0,Very Good,New
+104,Good,G,0,Good,New
+105,Fair,F,0,Fair,New
+106,Poor,P,0,Poor,New
+107,Default123,DFLT,0,Default,Modified

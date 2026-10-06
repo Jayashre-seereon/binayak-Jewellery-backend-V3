@@ -1,0 +1,15 @@
+SHP_ID,SHP_NAME,SHP_ALIAS,STN_ID,SHP_DESC,SHP_STATUS
+101,Default,DFLT,0,Default Shape,New
+102,Round Brilliant ,RBLNT,0,Round Brilliant (Maximum Shine  and Brillince),New
+103,Asscher,ASCHR,0,Asscher (More Square),New
+104,Oval ,OVL,0,Oval ,New
+105,Princess,PRNCS,0,Princess (Square Cut),New
+106,Emerald ,EMRLD,0,Emerald ,New
+107,Radiant,RADNT,0,Radiant,New
+108,Heart ,HRT,0,Heart ,New
+109,Marquise ,MRQUS,0,Marquise ,New
+110,Pear ,PER,0,Pear ,New
+111,Old European ,OEURP,0,Old European ,New
+112,Old Miners ,OMINR,0,Old Miners ,New
+113,Fancy,FNCY,0,Fancy,New
+114,Baguette,BAGU,0,Baguette,New

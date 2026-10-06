@@ -1,0 +1,63 @@
+ID,QUERY,LAST_UPDATE_ID
+1,"update  JSP_ITM_MST set ITM_NAME='GENTS RING(22 CT)',ITM_ALIAS='GRG',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=419 ",0
+2,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=419 ,0
+3,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (107,419  ) ",0
+4,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,419  ) ",0
+5,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=419 ,0
+6,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (419,102  ) ",0
+7,"update  JSP_ITM_MST set ITM_NAME='BABY BRACLET',ITM_ALIAS='B BRC',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=349 ",0
+8,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=349 ,0
+9,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,349  ) ",0
+10,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=349 ,0
+11,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (349,102  ) ",0
+12,"update  JSP_ITM_MST set ITM_NAME='F RING',ITM_ALIAS='RNG',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=336 ",0
+13,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=336 ,0
+14,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,336  ) ",0
+15,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=336 ,0
+16,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (336,102  ) ",0
+17,"insert into JSP_MTL_PURT_MST (PURT_ID,PURT_NAME,PURT_ALIAS,MTL_ID,PURT_DESC,PURT_STATUS) values (119,'NKD','NKD',101,'','New')",0
+18,"insert into JSP_MTL_GRD_MST (GRD_ID,GRD_NAME,GRD_ALIAS,PURT_ID,GRD_PRCNT,GRD_DESC,GRD_STATUS) values (131,'NKD','NKD',119,60.000,'','New')",0
+19,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (442,'STONE NOESPIN','SNP','STONE NOESPIN','New'  ) ",0
+20,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (114,442  ) ",0
+21,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (442,102  ) ",0
+22,"update  JSP_ITM_MST set ITM_NAME='NOSEPIN',ITM_ALIAS='nps',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=169 ",0
+23,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=169 ,0
+24,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,169  ) ",0
+25,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=169 ,0
+26,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (169,102  ) ",0
+27,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (443,'NOSEPIN NKD','NPNK','NonKDM Nosepin','New'  ) ",0
+28,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,443  ) ",0
+29,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (443,102  ) ",0
+30,"update  JSP_ITM_MST set ITM_NAME='CHIK',ITM_ALIAS='CHK',ITM_DESC='CHIK',ITM_STATUS='Modified' where ITM_ID=375 ",0
+31,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=375 ,0
+32,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,375  ) ",0
+33,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=375 ,0
+34,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (375,101  ) ",0
+35,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (375,102  ) ",0
+36,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (444,'LADIES RING','LRG','','New'  ) ",0
+37,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,444  ) ",0
+38,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (444,102  ) ",0
+39,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (445,'LADIES BRACELET','LADIE','LBR','New'  ) ",0
+40,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,445  ) ",0
+41,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (445,102  ) ",0
+42,"update  JSP_ITM_MST set ITM_NAME='LADIES BRACELET',ITM_ALIAS='LBR',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=445 ",0
+43,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=445 ,0
+44,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,445  ) ",0
+45,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=445 ,0
+46,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (445,102  ) ",0
+47,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (446,'24 CT COIN','24KC','','New'  ) ",0
+48,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,446  ) ",0
+49,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (446,102  ) ",0
+50,"insert into JSP_ITM_MST (ITM_ID,ITM_NAME,ITM_ALIAS,ITM_DESC,ITM_STATUS) values (447,'NATHIA MANG TIKA','NTMT','','New'  ) ",0
+51,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (113,447  ) ",0
+52,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (447,102  ) ",0
+53,"update  JSP_ITM_MST set ITM_NAME='24 CT',ITM_ALIAS='24KC',ITM_DESC='',ITM_STATUS='Modified' where ITM_ID=446 ",0
+54,delete from JSP_PRDT_ITM_CNFG   where ITM_ID=446 ,0
+55,"insert into JSP_PRDT_ITM_CNFG (PRDT_ID,ITM_ID) values (103,446  ) ",0
+56,delete from JSP_ITM_DSGN_CNFG    where ITM_ID=446 ,0
+57,"insert into JSP_ITM_DSGN_CNFG (ITM_ID,DSGN_ID) values (446,102  ) ",0
+58,"insert into JSP_BRND_MST (BRND_ID ,BRND_NAME ,BRND_ALIAS ,BRND_DESC ,BRND_STATUS) values (121,'Rosetta','Roset','Rosetta','New')",0
+59,"update  JSP_BRND_MST set BRND_NAME='DEMO2',BRND_ALIAS='DEMO2',BRND_DESC='',BRND_STATUS='Modified' where BRND_ID=118 ",0
+60,"update  JSP_BRND_MST set BRND_NAME='DEMO1',BRND_ALIAS='DEMO1',BRND_DESC='DEMO1',BRND_STATUS='Modified' where BRND_ID=105 ",0
+61,"update  JSP_BRND_MST set BRND_NAME='DEMO',BRND_ALIAS='DEMO',BRND_DESC='DEMO',BRND_STATUS='Modified' where BRND_ID=106 ",0
+62,"update  JSP_BRND_MST set BRND_NAME='kisna',BRND_ALIAS='kisna',BRND_DESC='',BRND_STATUS='Modified' where BRND_ID=120 ",0

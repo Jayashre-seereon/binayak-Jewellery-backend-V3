@@ -1,0 +1,19 @@
+PRDT_ID,PRDT_NAME,PRDT_ALIAS,CTG_ID,PRDT_DESC,PRDT_STATUS
+101,Gold Bullion,BGLD,101,Gold Bullion,Modified
+102,Silver Bullion,BSLV,101,Silver Bullion,Modified
+103,Gold Jewelry,GJWL,102,Gold Jewelry,Modified
+104,Silver Jewelry,SJWL,102,Silver Jewelry,Modified
+105,Branded Gold Jewelry,BGLWL,103,Branded Gold Jewelry,Modified
+106,Precious Stone Gold Jewelry,PSGJW,104,Precious Stone Gold Jewelry,Modified
+107,Branded Precious Stone Gold Jewelry,BPSGJ,105,Branded Precious Stone Gold Jewelry,Modified
+108,Gems Stone,GMSTN,106,Gems Stone,Modified
+109,Diamond,DMND,106,Diamond,Modified
+110,Zodiac,ZOD,107,Zodiac,New
+111,Photo Frame,PHFRM,107,Photo Frame,Modified
+112,One Form Gold,1GGLD,107,One Form Gold,Modified
+113,Silver Accesories,SLVAC,107,Silver Accesories,Modified
+114,MRP,MRP,107,MRP,Modified
+115,Beeds Jewelery,BEEDS,107,Beeds Jewelery,New
+116,PRIME ARTS,PRT,107,,Modified
+123,Artificial Jewellery,AJ,107,,New
+124,WATCHES,WTCH,107,,New

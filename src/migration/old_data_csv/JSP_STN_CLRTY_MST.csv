@@ -1,0 +1,34 @@
+CLRTY_ID,CLRTY_NAME,CLRTY_ALIAS,STN_ID,CLRTY_DESC,CLRTY_STATUS
+101,Default,DFLT,0,Default Clarity,New
+102,F,F,0,Flawless,Modified
+103,IF,IF,0,Internally Flawless,Modified
+104,VVSI,VVSI,0,"Very, Very Small Inclusions",Modified
+105,VVS2,VVS2,0,"Very, Very Small Inclusions Level 2
+",New
+106,VS,VS,0,Very Small Inclusions,New
+107,VS1,VS1,0,"Very Small Inclusions Level 1
+",New
+108,VS2,VS2,0,"Very Small Inclusions Level 2
+",New
+109,SI,SI,0,Small Inclusions,New
+110,SI1,SI1,0,"Small Inclusions Level 1
+",New
+111,SI2,SI2,0,"Small Inclusions Level 2
+",New
+112,LI,LI,0,Large Inclusions,New
+113,LI1,LI1,0,"Large Inclusions Level 1
+",New
+114,LI2,LI2,0,"Large Inclusions Level 2
+",New
+115,LI3,LI3,0,"Large Inclusions Level 3
+",New
+116,VVS,VVS,0,VVS,New
+117,VS2-SI1,VS2-S,0,VS2-SI1,New
+118,VVS-VS,VVS-V,0,VVS-VS,New
+119,VS-SI,VS-SI,0,VS-SI,New
+120,SI2-I1,SI2-I,0,SI2-I1,New
+121,VVS2-VS1,VVS2,0,VVS2-VS1,Modified
+122,I1-I2,I1,0,I1-I2,New
+123,I1,I1,0,I1,New
+124,VS2-VS1,VS2-V,0,VS2-VS1,New
+125,SI-I1,SI-I1,0,SI-I1,New

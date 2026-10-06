@@ -1,0 +1,6 @@
+CNTR_ID,CMP_ID,CNTR_NAME,CNTR_ALIAS,CNTR_TYPE,CNTR_STATUS
+101,101,Barcoding Section,BRCD,BackOffice Counter,Modified
+102,101,Cash Counter,CSH,Cash Counter,Modified
+104,101,Gold Jewellery,GJ,Display Counter,Modified
+112,101,Silver Counter,SLVC,Display Counter,New
+113,101,MRP,MRP,Display Counter,New

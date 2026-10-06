@@ -1,0 +1,51 @@
+STN_ID,STN_NAME,STN_ALIAS,STN_IS_PRCS,PRDT_ID,ITM_ID,STN_DESC,STN_STATUS
+101,Diamond,DMD,1,109,177,Diamond,Modified
+102,Amethyst,AMTHS,1,108,178,Amethyst,Modified
+103,Aquamarine,AUMRN,1,108,179,Aquamarine,New
+104,Blue Sapphires,BLSPR,1,108,180,Blue Sapphires,New
+105,Cats Eye,CTEYS,1,108,181,Cats Eye,New
+106,Firoza,FIROZ,1,108,182,Firoza,New
+107,Garnet,GRNT,1,108,183,Garnet,New
+108,Gomed,GOMD,1,108,184,Gomed,New
+109,Iolite,IOLIT,1,108,185,Iolite,New
+110,Moon,MOON,1,108,186,Moon,New
+111,Blue Moon,BLMON,1,108,187,Blue Moon,New
+112,Onyx Panna,ONXPN,1,108,188,Onyx Panna,New
+113,Opal,OPAL,1,108,189,Opal,New
+114,Honey Opal,HNOPL,1,108,190,Honey Opal,New
+115,Panna,PANNA,1,108,191,Panna,New
+116,Burma Pearl,BRMPR,1,108,192,Burma Pearl,New
+117,South Sea Pearl,SUTPR,1,108,193,South Sea Pearl,New
+118,Ceylon Pearl,CYLPR,1,108,194,Ceylon Pearl,New
+119,Peridot,PRDT,1,108,195,Peridot,New
+120,Red Coral,RDCRL,1,108,196,Red Coral,New
+121,Ruby,RUBY,1,108,197,Ruby,New
+122,Citrine Stone,CTRST,1,108,198,Citrine Stone,New
+123,Star Ruby,STRRB,1,108,199,Star Ruby,New
+124,Tiger Eye,TGREY,1,108,200,Tiger Eye,New
+125,Turmaline,TRML,1,108,201,Turmaline,New
+126,White Coral,WHCRL,1,108,202,White Coral,New
+127,White Sapphires,WHSPR,1,108,203,White Sapphires,New
+128,White Topaz,WHTOP,1,108,204,White Topaz,New
+129,White Zircon,WHZIR,1,108,205,White Zircon,New
+130,Yellow Sapphires,YLSAP,1,108,206,Yellow Sapphires,New
+131,Yellow Topaz,YLTOP,1,108,207,Yellow Topaz,New
+132,Zed,ZED,1,108,208,Zed,New
+133,Agate,AGATE,1,108,209,Agate,New
+134,Astro Magnet,ASTMG,1,108,210,Astro Magnet,New
+135,Astro Diamond,ASTDM,1,108,211,Astro Diamod,New
+136,Blue Zircon,BLZIR,1,108,212,Blue Zircon,New
+137,Yellow Zircon,YLZIR,1,108,213,Yellow Zircon,New
+138,China Pearl,CHNPR,1,108,214,,New
+139,Ceylon Moon,CYLMN,1,108,215,Ceylon Moon,New
+140,Setrine,STRN,1,108,216,Setrine,New
+141,Blue Topaz,BLTPZ,1,108,217,Blue Topaz,New
+142,Emerald,EMRLD,1,108,218,Emerald,New
+143,Navaratna,NVRTN,1,108,219,Navaratna,Modified
+144,American Diamond,AD,1,108,220,American Diamond,Modified
+145,Black Star,BSTAR,1,108,221,Black Star,Modified
+146,Pearl,PRL,1,108,222,Pearl,New
+147,Lapiz,LAPIZ,1,108,223,,New
+148,Venejuala Pearl,VJP,1,108,224,.,New
+149,C.STONE,CSTNE,1,109,225,,New
+151,DEFAULT,DFLT,1,107,228,,New

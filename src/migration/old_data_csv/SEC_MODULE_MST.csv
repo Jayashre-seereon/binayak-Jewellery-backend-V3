@@ -1,0 +1,117 @@
+MDL_ID,MDL_NAME,MDL_ALIAS,MDL_TYPE_ID,MDL_DESC,MDL_STATUS
+1001,Alloy Master,,,,Alloy Master
+1002,Brand Master,,,,Brand Master
+1003,Category Master,,,,Category Master
+1004,Certification Master,,,,Certification Master
+1005,Financial Year Master,,,,Financial Year Master
+1006,Company Master,,,,Company Master
+1007,Company Master,,,,Company Master
+1008,Design Master,,,,Design Master
+1009,Grade Master,,,,Grade Master
+1010,Group Master,,,,Group Master
+1011,Item Master,,,,Item Master
+1012,Ledger Master,,,,Ledger Master
+1013,Metal Master,,,,Metal Master
+1014,Party Master,,,,Party Master
+1015,Party Type Master,,,,Party Type Master
+1016,Product Master,,,,Product Master
+1017,Purity Master,,,,Purity Master
+1018,Stone Master,,,,Stone Master
+1019,Stone Clarity,,,,Stone Clarity Master
+1020,Stone Color ,,,,Stone Color  Master
+1021,Stone Cut ,,,,Stone Cut  Master
+1022,Stone Shape ,,,,Stone Shape  Master
+1023,Stone SieveSize,,,,Stone SieveSize Master
+1024,Tax Master,,,,Tax Master
+1025,Branch Master,,,,Branch Master
+1026,Enviornment Sttings,,,,Enviornment Sttings
+1027,User Master,,,,User Master
+1028,Role Master,,,,Role Master
+1029,User Access Rights,,,,User Access Rights
+1030,Role Access Rights,,,,Role Access Rights
+1031,Module Master,,,,Module Master
+1032,Voucher Generator Config ,,,,Voucher Generator Config 
+1043,Alloy Purchase,,,,Alloy Purchase
+1045,Bullion Purchase,,,,Bullion Purchase
+1055,Old Metal Issue to Refiner,,,,Old Metal Issue to Refiner
+1060,Bullion Recieve From Refiner,,,,Bullion Recieve From Refiner 
+1063,Bullion Issue to Artisan,,,,Bullion Issue to artisan/Precious Stone Artisan
+1066,Ornament Recieve From Artisan,,,,Ornament Recieve From Artisan / Unfinishd Ornament Recived From Artisan
+1067,Ornament Reciev From Artisan At Ho,,,,Ornament Reciev From Artisan At Ho
+1069,Rate Cut,,,,Rate Cut
+1070,Weight Cut,,,,Weight Cut
+1071,Ornament Return to Artisan,,,,Ornament Return to Artisan
+1074,Ornament Purchase,,,,Ornament Purchase
+1078,Branded Ornament Purchase,,,,Branded Ornament Purchase
+1080,Precious Stone Ornament Purchase,,,,Precious Stone Ornament Purchase
+1084,Precious Stone Recive And Issue to Artisan,,,,Precious Stone Recive And Issue to Artisan
+1085,Precious Stone Ornament Recieve From Artisan,,,,Precious Stone Ornament Recieve From Artisan
+1088,Branded Precious Stone Ornament Purchase,,,,Branded Precious Stone Ornament Purchase
+1090,Precious Stone Purchase,,,,Precious Stone Purchase
+1094,Accessories Purchase,,,,Accessories Purchase
+1096,Unfinishd Ornament Issue to In-House Artisan,,,,Unfinishd Ornament Issue to In-House Artisan
+1098,Finishd Ornament Recieve From In-House Artisan,,,,Finishd Ornament Recieve From In-House Artisan
+1113,Ornament Issue to HallMark At Suit,,,,Ornament Issue to HallMark At Suit
+1114,Ornament Issue to HallMark At HO,,,,Ornament Issue to HallMark At HO
+1115,Ornament Reject From HalMark ,,,,Ornament Reject From HalMark 
+1116,Ornament Recieve After HalMark At Suit,,,,Ornament Recieve After HalMark At Suit
+1117,Ornament Recieve From HallMark At Ho,,,,Ornament Recieve From HallMark At Ho
+1123,Issue to Barcode,,,,Issue to Barcode/Recieve And Issue to barcode
+1133,Ornament Barcoding,,,,Ornament Barcoding
+1135,Branded Ornament Barcoding,,,,Branded Ornament Barcoding
+1137,Branded Precious Stone Ornament Barcoding,,,,Branded Precious Stone Ornament Barcoding
+1139,Precious Stone Barcoding,,,,Precious Stone Barcoding
+1141,Accessories Barcoding,,,,Accessories Barcoding
+1147,Old Purchase,,,,Old Purchase
+1148,Old Purchase Estimation,,,,Old Purchase Estimation
+1150,Old Purchase Return,,,,Old Purchase Return
+1151,Retail Sale Invoice,,,,Retail Sale Invoice
+1156,Retail Sale Invoice Return,,,,Retail Sale Invoice Return
+1158,Advance Recieve ,,,,Advance Recieve 
+1159,Counter transfer,,,,Counter transfer
+1162,Stock Verification,,,,Stock Verification
+1169,Approval Issue,,,,Approval Issue/Approval Cancel
+1170,Approval Cancel,,,,Approval Cancel
+1171,Tax Invoice/ Tax Invoice on Approval,,,,Tax Invoice/ Tax Invoice on Approval
+1172,Tax Invoice Return,,,,Tax Invoice Return
+1173,Old Issue to HO,,,,Old Issue to HO
+1174,Old Recieve From Branch,,,,Old Recieve From Branch
+1176,Stock Issue,,,,Stock Issue
+1177,Stock Recieve,,,,Stock Recieve
+1182,Account Voucher Posting,,,,Account Voucher Posting
+1195,Precious Stone Ornament Reciev From Artisan At Ho,,,,Precious Stone Ornament Reciev From Artisan At Ho
+1196,Rate Fix at Suit,,,,Rate Fix 
+1197,Item Status,,,,Item Status
+1198,Precious Stone Ornament Barcoding,,,,Precious Stone Ornament Barcoding
+1199,Old Metal Recieve From HO,,,,Old Metal Recieve From HO
+1200,Advance Recieve Repayment,,,,Advance Recieve Repayment
+1201,Rate Master,,,,Rate Master
+1203,Cut Pice Issue to HO,,,,Cut Pice Issue to HO
+1204,CutPice Recieve From Branch,,,,CutPice Recieve From Branch
+1205,Cut Pice Issue to Refiner,,,,Cut Pice Issue to Refiner
+1207,CutPice Recieve From Ho,,,,CutPice Recieve From Ho
+1208,Ornament Issue to Mint,,,,Ornament Issue to Mint
+1210,Coded Item Issue to Artisan,,,,Coded Item Issue to Artisan
+1224,Sale Summury,,,,Sale Summury
+1225,Cash Transfer,,,,Cash Transfer
+1226,Counter Wise Stock,,,,Counter Wise Stock
+1227,Stock Summary,,,,Stock Summary
+1228,Check Voucher Tally,,,,Check Voucher Tally
+1229,Ledger Book,,,,Ledger Book
+1230,Trail Ballance,,,,Trail Ballance
+1231,DataBase Updation,,,,DataBase Updation
+1232,Test DataBase Updation,,,,Test DataBase Updation
+1233,Stock Analysis,,,,Stock Analysis
+1234,Barcode Modification,,,,Barcode Modification
+1236,Metal Advance receive,,,,MetalAdvancereceive111
+1238,Back Office Retail Sale,,,,Back Door Sale
+1239,Back Office Retail Sale Return,,,,Back Door Sale Return
+2239,AddBulkStock,,,,AddBulkStock
+2240,RetailInvoiceEstimate,,,,RetailInvoiceEstimate
+2241,Item Wise Stock,,,,Item Wise Stock
+2242,EmployeeMaster,,,,EmployeeMaster
+2243,CUSTOMER REPAIRING RECEIVE,,,,CUSTOMER REPAIRING RECEIVE
+2244,CUSTOMER REPAIRING ISSUE,,,,
+2245,REPAIRING ITEM ISSUE TO ARTISAN,,,,
+2246,REPAIRING ITEM RECEIVE FROM ARTISAN,,,,
+2247,RejectBarcode,,,,RejectBarcode

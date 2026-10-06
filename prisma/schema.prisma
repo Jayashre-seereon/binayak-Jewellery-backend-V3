@@ -1,0 +1,1151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  role         String   @default("ADMIN")
+  resetToken   String?
+  resetTokenExpiry DateTime?
+  refreshToken String?
+  mustChangePassword Boolean @default(false)
+  // Bumped on logout / password change / admin reset: older access tokens stop working.
+  tokenVersion Int @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Store {
+  id                     Int                     @id @default(autoincrement())
+  storeName              String
+  location               String?
+  email                  String                  @unique
+  password               String
+  role                   String                  @default("STORE")
+  refreshToken           String?
+  resetToken             String?
+  resetTokenExpiry       DateTime?
+  mustChangePassword     Boolean                 @default(false)
+  tokenVersion           Int                     @default(0)
+  cinNo                  String?
+  gstNo                  String?
+  state                  String?
+  city                   String?
+  address                String?
+  phone                  String?
+  termsConditions        String?
+  tagline                String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  brands                 Brand[]
+  categories             Category[]
+  metals                 Metal[]
+  purities               Purity[]
+  grades                 Grade[]
+  designs                Design[]
+  products               Product[]
+  items                  Item[]
+  stones                 Stone[]
+  employees              Employee[]
+  partytypes             Partytype[]
+  partymasters           Partymaster[]
+  partyOpeningBalance    PartyOpeningBalance[]
+  rateMaster             RateMaster[]
+  purchases              Purchase[]
+  purchasePayments       PurchasePayment[]
+  inventory              Inventory[]
+  advanceReceive         AdvanceReceive[]
+  storeCounter           StoreCounter?
+  sales                  Sale[]
+  salePayments           SalePayment[]
+  saleOldGolds           SaleOldGold[]
+  saleAdvanceAdjustments SaleAdvanceAdjustment[]
+  customers              Customer[]
+  customerAdjustmentLogs CustomerAdjustmentLog[]
+  transfersFrom          InventoryTransfer[]     @relation("TransferFromStore")
+  transfersTo            InventoryTransfer[]     @relation("TransferToStore")
+  accounts               Account[]
+  vouchers               Voucher[]
+  ledgerEntries          LedgerEntry[]
+  barcodeConfig          BarcodeConfig?
+}
+
+model Brand {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  storeId   Int
+  store     Store     @relation(fields: [storeId], references: [id])
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Metal {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  storeId             Int
+  store               Store                 @relation(fields: [storeId], references: [id])
+  purities            Purity[]
+  products            Product[]
+  rateMaster          RateMaster[]
+  purchaseItems       PurchaseItem[]
+  partyOpeningBalance PartyOpeningBalance[]
+  inventory           Inventory[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+}
+
+model Purity {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  metalId Int
+  metal   Metal @relation(fields: [metalId], references: [id])
+
+  storeId Int
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  grades        Grade[]
+  rateMaster    RateMaster[]
+  purchaseItems PurchaseItem[]
+  inventory     Inventory[]
+  products      Product[]
+  items         Item[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Grade {
+  id          Int     @id @default(autoincrement())
+  name        String
+  percentage  Float
+  description String?
+
+  purityId Int
+  purity   Purity @relation(fields: [purityId], references: [id])
+
+  storeId       Int
+  store         Store          @relation(fields: [storeId], references: [id])
+  rateMaster    RateMaster[]
+  purchaseItems PurchaseItem[]
+  inventory     Inventory[]
+  products      Product[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Design {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  image       String?
+  storeId     Int
+  store       Store    @relation(fields: [storeId], references: [id])
+  items       Item[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String
+  image       String?
+  description String?
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // Migration compatibility: legacy products are not always tied to a single metal
+  // (metal is chosen per physical piece). Made optional so the old master list
+  // migrates losslessly; the UI still supplies it when creating new products.
+  metalId Int?
+  metal   Metal? @relation(fields: [metalId], references: [id])
+
+  purityId Int?
+  purity   Purity? @relation(fields: [purityId], references: [id])
+
+  gradeId Int?
+  grade   Grade? @relation(fields: [gradeId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  items         Item[]
+  purchaseItems PurchaseItem[]
+  stones        Stone[]
+  inventory     Inventory[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+}
+
+model Item {
+  id          Int     @id @default(autoincrement())
+  name        String
+  image       String?
+  description String?
+  // Item code for fixed-price / MRP goods (generated in-store EAN-13 or a manufacturer code).
+  // Every physical piece additionally carries its own unique Inventory.barcodeNo.
+  barcode     String?
+
+  // Migration compatibility: in the legacy system an item (e.g. "NECKLACE") is a
+  // shared master reused across many products/designs (many-to-many). Made optional
+  // so the 337 legacy items migrate without forcing an artificial single parent;
+  // the UI still supplies these when creating new items.
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  designId Int?
+  design   Design? @relation(fields: [designId], references: [id])
+
+  purityId Int?
+  purity   Purity? @relation(fields: [purityId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  stones        Stone[]
+  purchaseItems PurchaseItem[]
+  inventory     Inventory[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([storeId, barcode])
+}
+
+model Stone {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  itemId Int
+  item   Item @relation(fields: [itemId], references: [id])
+
+  storeId       Int
+  store         Store          @relation(fields: [storeId], references: [id])
+  purchaseItems PurchaseItem[]
+  inventory     Inventory[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Employee {
+  id      Int    @id @default(autoincrement())
+  empCode String
+
+  name          String
+  fatherName    String?
+  dateOfJoining DateTime?
+
+  phone  String?
+  mobile String
+  email  String
+
+  webAddress String?
+
+  bankAccountNo String?
+  bankName      String?
+
+  basicSalary      Float?
+  specialAllowance Float?
+
+  addressLine1 String?
+  addressLine2 String?
+  purchases    Purchase[]
+  storeId      Int
+  store        Store      @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, empCode])
+  @@unique([storeId, email])
+}
+
+model StoreCounter {
+  id                       Int @id @default(autoincrement())
+  storeId                  Int @unique
+  lastEmpNumber            Int @default(0)
+  lastInvoiceNumber        Int @default(0)
+  lastTransferNumber       Int @default(0)
+  lastSaleNumber           Int @default(0)
+  lastInventoryNumber      Int @default(0)
+  lastReceiptVoucherNumber Int @default(0)
+  lastPaymentVoucherNumber Int @default(0)
+  lastJournalVoucherNumber Int @default(0)
+  lastCustomerNumber       Int @default(0)
+
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model Partytype {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  storeId     Int
+  store       Store         @relation(fields: [storeId], references: [id])
+  partymaster Partymaster[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Partymaster {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  gst                 String?
+  phone               String?
+  storeId             Int
+  partytypeId         Int
+  ledger              String?
+  address             String?
+  store               Store                 @relation(fields: [storeId], references: [id])
+  partytype           Partytype             @relation(fields: [partytypeId], references: [id])
+  partyOpeningBalance PartyOpeningBalance[]
+  purchases           Purchase[]
+  sales               Sale[]
+  vouchers            Voucher[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+}
+
+model PartyOpeningBalance {
+  id            Int         @id @default(autoincrement())
+  debit         Float?
+  credit        Float?
+  type          String
+  year          String
+  storeId       Int
+  partymasterId Int
+  metalId       Int
+  store         Store       @relation(fields: [storeId], references: [id])
+  partymaster   Partymaster @relation(fields: [partymasterId], references: [id])
+  metal         Metal       @relation(fields: [metalId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RateMaster {
+  id Int @id @default(autoincrement())
+
+  metalId  Int
+  purityId Int
+  gradeId  Int?
+
+  unit String
+
+  saleRate     Float
+  exchangeRate Float
+  cashRate     Float
+
+  effectiveDate DateTime @default(now())
+
+  storeId Int
+
+  metal  Metal  @relation(fields: [metalId], references: [id])
+  purity Purity @relation(fields: [purityId], references: [id])
+  grade  Grade? @relation(fields: [gradeId], references: [id])
+  store  Store  @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PurchaseType {
+  ORNAMENT
+  OLD
+  BULLION
+}
+
+model Purchase {
+  id           Int          @id @default(autoincrement())
+  invoiceNo    String?      @unique
+  purchaseType PurchaseType
+
+  // Migration compatibility: marks synthetic "opening stock" purchases created when
+  // migrating legacy on-hand inventory that has no real purchase document.
+  isOpeningStock Boolean @default(false)
+
+  partyId    Int?
+  employeeId Int?
+  storeId    Int
+
+  date          DateTime  @default(now())
+  referenceNo   String?
+  referenceDate DateTime?
+  address       String?
+
+  placeOfSupply String?
+  isRCM         Boolean @default(false)
+
+  customerId       Int?
+  customerName     String?
+  customerPhone    String?
+  customerIdType   String?
+  customerIdNumber String?
+
+  document    String?
+  attachments Json?
+
+  grossAmount   Float @default(0)
+  taxableAmount Float @default(0)
+  subtotal      Float @default(0)
+  discount      Float @default(0)
+  igst          Float @default(0)
+  cgst          Float @default(0)
+  sgst          Float @default(0)
+  taxAmount     Float @default(0)
+  roundOff      Float @default(0)
+  totalAmount   Float @default(0)
+  netPayable    Float @default(0)
+
+  paymentMode String?
+  paidAmount  Float   @default(0)
+  dueAmount   Float   @default(0)
+
+  adjustedAmount   Float  @default(0)
+  balanceAmount    Float  @default(0)
+  adjustmentStatus String @default("AVAILABLE")
+
+  narration String?
+
+  party        Partymaster?      @relation(fields: [partyId], references: [id])
+  employee     Employee?         @relation(fields: [employeeId], references: [id])
+  customer     Customer?         @relation(fields: [customerId], references: [id])
+  store        Store             @relation(fields: [storeId], references: [id])
+  items        PurchaseItem[]
+  payments     PurchasePayment[]
+  inventory    Inventory[]
+  saleOldGolds SaleOldGold[]
+  vouchers     Voucher[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model PurchaseItem {
+  id               Int     @id @default(autoincrement())
+  purchaseItemCode String? @unique
+  purchaseId       Int
+  itemId           Int?
+  productId        Int?
+  metalId          Int?
+  purityId         Int?
+  gradeId          Int?
+  stoneId          Int?
+
+  pieces Int? @default(1)
+
+  grossWeight Float @default(0)
+  stoneWeight Float @default(0)
+  netWeight   Float @default(0)
+
+  dustWeight      Float @default(0)
+  deductionWeight Float @default(0)
+
+  pureWeight    Float @default(0)
+  actualWeight  Float @default(0)
+  balanceWeight Float @default(0)
+
+  purity          Float?
+  touchPercentage Float?
+  fineness        Float?
+
+  rate Float @default(0)
+
+  makingCharges     Float @default(0)
+  wastagePercentage Float @default(0)
+  hallmarkCharges   Float @default(0)
+
+  metalAmount Float @default(0)
+  stoneAmount Float @default(0)
+  otherAmount Float @default(0)
+  discount    Float @default(0)
+  totalAmount Float @default(0)
+
+  huidNo      String?
+  hsnCode     String? @default("711319")
+  tagNo       String?
+  barSerialNo String?
+  assayCertNo String?
+
+  vatType   String?
+  narration String?
+  itemPhoto String?
+
+  extraDetails Json?
+
+  purchase     Purchase    @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  item         Item?       @relation(fields: [itemId], references: [id])
+  product      Product?    @relation(fields: [productId], references: [id])
+  metal        Metal?      @relation(fields: [metalId], references: [id])
+  purityMaster Purity?     @relation(fields: [purityId], references: [id])
+  grade        Grade?      @relation(fields: [gradeId], references: [id])
+  stone        Stone?      @relation(fields: [stoneId], references: [id])
+  inventory    Inventory[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  PENDING
+  MELTED
+  REFINED
+  DAMAGED
+}
+
+enum InventoryTransferStatus {
+  PENDING
+  RECEIVED
+  CANCELLED
+}
+
+model Inventory {
+  id Int @id @default(autoincrement())
+
+  inventoryCode String
+
+  purchaseItemId Int @unique
+  purchaseId     Int
+  storeId        Int
+
+  purchaseType PurchaseType
+
+  itemId    Int?
+  productId Int?
+  metalId   Int?
+  purityId  Int?
+  gradeId   Int?
+  stoneId   Int?
+
+  grossWeight Float @default(0)
+  stoneWeight Float @default(0)
+  netWeight   Float @default(0)
+  pieces      Int?  @default(1)
+
+  dustWeight      Float @default(0)
+  deductionWeight Float @default(0)
+
+  pureWeight    Float @default(0)
+  actualWeight  Float @default(0)
+  balanceWeight Float @default(0)
+
+  purity          Float?
+  touchPercentage Float?
+  fineness        Float?
+
+  huidNo      String?
+  hsnCode     String? @default("711319")
+  tagNo       String?
+  barcodeNo   String?
+  barSerialNo String?
+  assayCertNo String?
+
+  status InventoryStatus @default(AVAILABLE)
+
+  itemPhoto    String?
+  narration    String?
+  extraDetails Json?
+
+  purchaseItem PurchaseItem @relation(fields: [purchaseItemId], references: [id])
+  purchase     Purchase     @relation(fields: [purchaseId], references: [id])
+  store        Store        @relation(fields: [storeId], references: [id])
+
+  item          Item?                   @relation(fields: [itemId], references: [id])
+  product       Product?                @relation(fields: [productId], references: [id])
+  metal         Metal?                  @relation(fields: [metalId], references: [id])
+  purityMaster  Purity?                 @relation(fields: [purityId], references: [id])
+  grade         Grade?                  @relation(fields: [gradeId], references: [id])
+  stone         Stone?                  @relation(fields: [stoneId], references: [id])
+  transferItems InventoryTransferItem[]
+  saleItems     SaleItem[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  @@unique([storeId, inventoryCode])
+  @@unique([storeId, tagNo])
+  @@unique([storeId, barcodeNo])
+  @@index([storeId])
+  @@index([purchaseType])
+  @@index([status])
+  @@index([huidNo])
+  @@index([barSerialNo])
+}
+
+model InventoryTransfer {
+  id         Int    @id @default(autoincrement())
+  transferNo String @unique
+
+  fromStoreId Int
+  toStoreId   Int
+
+  transferDate DateTime  @default(now())
+  receivedDate DateTime?
+
+  status InventoryTransferStatus @default(PENDING)
+
+  narration String?
+
+  fromStore Store @relation("TransferFromStore", fields: [fromStoreId], references: [id])
+  toStore   Store @relation("TransferToStore", fields: [toStoreId], references: [id])
+
+  items InventoryTransferItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fromStoreId])
+  @@index([toStoreId])
+  @@index([status])
+}
+
+model InventoryTransferItem {
+  id Int @id @default(autoincrement())
+
+  transferId  Int
+  inventoryId Int
+
+  transfer  InventoryTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  inventory Inventory         @relation(fields: [inventoryId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([transferId, inventoryId])
+  @@index([transferId])
+  @@index([inventoryId])
+}
+
+model Customer {
+  id           Int     @id @default(autoincrement())
+  customerCode String? @unique
+  name         String
+  phone        String
+  address      String?
+  city         String?
+  state        String? @default("ODISHA")
+  pan          String?
+  gst          String?
+  idType       String?
+  idNumber     String?
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  sales           Sale[]
+  purchases       Purchase[]
+  advanceReceives AdvanceReceive[]
+  adjustmentLogs  CustomerAdjustmentLog[]
+  vouchers        Voucher[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, phone])
+  @@index([storeId])
+  @@index([phone])
+}
+
+enum AdjustmentType {
+  ADVANCE
+  OLD_JEWELLERY
+}
+
+model CustomerAdjustmentLog {
+  id             Int            @id @default(autoincrement())
+  customerId     Int
+  saleId         Int
+  storeId        Int
+  adjustmentType AdjustmentType
+  referenceId    Int
+  referenceDocNo String?
+  saleInvoiceNo  String
+
+  totalOriginal    Float @default(0)
+  previousBalance  Float @default(0)
+  adjustedAmount   Float @default(0)
+  remainingBalance Float @default(0)
+
+  cashierName    String?
+  adjustmentDate DateTime @default(now())
+  notes          String?
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  sale     Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  store    Store    @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([customerId])
+  @@index([saleId])
+  @@index([storeId])
+  @@index([referenceId])
+  @@index([adjustmentType])
+}
+
+enum AdvancePaymentMode {
+  CASH
+  ONLINE
+}
+
+model AdvanceReceive {
+  id            Int                @id @default(autoincrement())
+  customerId    Int?
+  customerName  String
+  contactNumber String?
+  address       String?
+  amount        Decimal            @db.Decimal(12, 2)
+  paymentMode   AdvancePaymentMode
+  specification String?
+
+  adjustedAmount Float    @default(0)
+  balanceAmount  Float    @default(0)
+  status         String   @default("AVAILABLE")
+  receiveDate    DateTime @default(now())
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  customer        Customer?               @relation(fields: [customerId], references: [id])
+  saleAdjustments SaleAdvanceAdjustment[]
+  vouchers        Voucher[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([customerId])
+  @@index([contactNumber])
+  @@index([customerName])
+}
+
+enum SalePaymentMode {
+  CASH
+  ONLINE
+  CARD
+  UPI
+  CHEQUE
+  OTHER
+}
+
+enum SaleStatus {
+  COMPLETED
+  CANCELLED
+}
+
+model Sale {
+  id        Int    @id @default(autoincrement())
+  invoiceNo String @unique
+
+  storeId    Int
+  partyId    Int?
+  customerId Int?
+
+  saleDate DateTime   @default(now())
+  status   SaleStatus @default(COMPLETED)
+
+  cancelledAt     DateTime?
+  cancelledReason String?
+  cancelledBy     String?
+
+  customerName    String?
+  customerPhone   String?
+  customerAddress String?
+  customerCity    String?
+  customerPan     String?
+  customerGst     String?
+  customerState   String?
+  placeOfSupply   String?
+
+  cinNo       String?
+  storeGst    String?
+  cashierName String?
+  irnNo       String?
+
+  isCustomerCopy Boolean @default(true)
+
+  grossAmount   Float @default(0)
+  offerDiscount Float @default(0)
+  discount      Float @default(0)
+  taxableAmount Float @default(0)
+
+  cgstPercent Float @default(1.5)
+  cgstAmount  Float @default(0)
+  sgstPercent Float @default(1.5)
+  sgstAmount  Float @default(0)
+  igstPercent Float @default(0)
+  igstAmount  Float @default(0)
+  totalTax    Float @default(0)
+
+  subTotal Float @default(0)
+  lessUrd  Float @default(0)
+  roundOff Float @default(0)
+
+  gstRate     Float?  @default(0)
+  gstType     String?
+  invoiceType String? @default("TAX_INVOICE")
+
+  // Backward compatibility / aggregate totals
+  subtotal      Float @default(0)
+  igst          Float @default(0)
+  cgst          Float @default(0)
+  sgst          Float @default(0)
+  taxAmount     Float @default(0)
+  grossTotal    Float @default(0)
+  oldGoldAmount Float @default(0)
+  advanceAmount Float @default(0)
+
+  payableAmount Float   @default(0)
+  netPayable    Float   @default(0)
+  paidAmount    Float   @default(0)
+  dueAmount     Float   @default(0)
+  amountInWords String?
+
+  termsAccepted Boolean @default(true)
+  narration     String?
+
+  store    Store        @relation(fields: [storeId], references: [id])
+  party    Partymaster? @relation(fields: [partyId], references: [id])
+  customer Customer?    @relation(fields: [customerId], references: [id])
+
+  items              SaleItem[]
+  payments           SalePayment[]
+  oldGolds           SaleOldGold[]
+  advanceAdjustments SaleAdvanceAdjustment[]
+  adjustmentLogs     CustomerAdjustmentLog[]
+  vouchers           Voucher[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([partyId])
+  @@index([customerId])
+  @@index([saleDate])
+  @@index([status])
+}
+
+model SaleItem {
+  id Int @id @default(autoincrement())
+
+  saleId      Int
+  inventoryId Int
+
+  particulars String?
+  itemCode    String?
+  huidNo      String?
+  hsnCode     String? @default("711319")
+  purityName  String?
+
+  pieces Int @default(1)
+
+  grossWeight Float @default(0)
+  stoneWeight Float @default(0)
+  netWeight   Float @default(0)
+
+  purity Float?
+  rate   Float  @default(0)
+
+  metalAmount      Float   @default(0)
+  makingCharges    Float   @default(0)
+  makingChargeType String? @default("PERCENT")
+  makingChargeRate Float   @default(0)
+  wastageAmount    Float   @default(0)
+  stoneAmount      Float   @default(0)
+  hallmarkCharges  Float   @default(0)
+  otherCharges     Float   @default(0)
+  otherAmount      Float   @default(0)
+
+  discount Float @default(0)
+
+  taxableAmount Float @default(0)
+
+  igst      Float @default(0)
+  cgst      Float @default(0)
+  sgst      Float @default(0)
+  taxAmount Float @default(0)
+
+  totalAmount Float @default(0)
+
+  sale      Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  inventory Inventory @relation(fields: [inventoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([saleId, inventoryId])
+  @@index([saleId])
+  @@index([inventoryId])
+}
+
+model SalePayment {
+  id Int @id @default(autoincrement())
+
+  saleId  Int
+  storeId Int
+
+  paymentMode    SalePaymentMode
+  amount         Float
+  paymentChannel String?
+  transactionId  String?
+  description    String?
+
+  referenceNo String?
+  voucherId   Int?
+  paymentDate DateTime @default(now())
+  narration   String?
+
+  sale  Sale  @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([saleId])
+  @@index([storeId])
+}
+
+model SaleOldGold {
+  id Int @id @default(autoincrement())
+
+  saleId Int
+
+  // Existing OLD purchase created from Purchase module
+  purchaseId Int?
+
+  description String?
+
+  grossWeight Float @default(0)
+  stoneWeight Float @default(0)
+  netWeight   Float @default(0)
+
+  purity Float?
+  rate   Float  @default(0)
+
+  metalAmount     Float @default(0)
+  deductionAmount Float @default(0)
+
+  value Float @default(0)
+
+  adjustedAmount   Float   @default(0)
+  previousBalance  Float   @default(0)
+  remainingBalance Float   @default(0)
+  cashierName      String?
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  purchase Purchase? @relation(fields: [purchaseId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([saleId, purchaseId])
+  @@index([saleId])
+  @@index([purchaseId])
+  @@index([storeId])
+}
+
+model SaleAdvanceAdjustment {
+  id Int @id @default(autoincrement())
+
+  saleId           Int
+  advanceReceiveId Int
+
+  amount Float
+
+  adjustedAmount   Float   @default(0)
+  previousBalance  Float   @default(0)
+  remainingBalance Float   @default(0)
+  cashierName      String?
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  advanceReceive AdvanceReceive @relation(fields: [advanceReceiveId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([saleId, advanceReceiveId])
+  @@index([saleId])
+  @@index([advanceReceiveId])
+  @@index([storeId])
+}
+
+model PurchasePayment {
+  id Int @id @default(autoincrement())
+
+  purchaseId Int
+  storeId    Int
+
+  paymentMode    String?
+  amount         Float
+  paymentChannel String?
+  transactionId  String?
+  description    String?
+
+  referenceNo String?
+  voucherId   Int?
+  paymentDate DateTime @default(now())
+  narration   String?
+
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  store    Store    @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([purchaseId])
+  @@index([storeId])
+}
+
+enum VoucherType {
+  RECEIPT
+  PAYMENT
+  JOURNAL
+}
+
+enum VoucherStatus {
+  COMPLETED
+  CANCELLED
+}
+
+model Account {
+  id             Int     @id @default(autoincrement())
+  storeId        Int
+  accountCode    String?
+  accountName    String
+  accountGroup   String  @default("General")
+  accountType    String  @default("EXPENSE")
+  isSystem       Boolean @default(false)
+  openingBalance Float   @default(0)
+  currentBalance Float   @default(0)
+  narration      String?
+
+  store         Store         @relation(fields: [storeId], references: [id])
+  ledgerEntries LedgerEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, accountName])
+  @@index([storeId])
+  @@index([accountGroup])
+}
+
+model Voucher {
+  id             Int         @id @default(autoincrement())
+  voucherNo      String
+  voucherType    VoucherType
+  storeId        Int
+  date           DateTime    @default(now())
+  amount         Float       @default(0)
+  paymentMode    String?
+  referenceType  String?
+  referenceId    Int?
+  referenceDocNo String?
+
+  partyType  String?
+  partyId    Int?
+  partyName  String?
+  partyPhone String?
+
+  bankName       String?
+  transactionRef String?
+  narration      String?
+  status         VoucherStatus @default(COMPLETED)
+
+  cancelledAt     DateTime?
+  cancelledReason String?
+  createdBy       String?
+
+  store            Store           @relation(fields: [storeId], references: [id])
+  customer         Customer?       @relation(fields: [customerId], references: [id])
+  customerId       Int?
+  party            Partymaster?    @relation(fields: [partyId], references: [id])
+  sale             Sale?           @relation(fields: [saleId], references: [id])
+  saleId           Int?
+  purchase         Purchase?       @relation(fields: [purchaseId], references: [id])
+  purchaseId       Int?
+  advanceReceive   AdvanceReceive? @relation(fields: [advanceReceiveId], references: [id])
+  advanceReceiveId Int?
+
+  entries LedgerEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, voucherNo])
+  @@index([storeId])
+  @@index([voucherType])
+  @@index([status])
+  @@index([date])
+}
+
+model LedgerEntry {
+  id          Int           @id @default(autoincrement())
+  voucherId   Int?
+  storeId     Int
+  accountId   Int?
+  accountName String
+  entryType   String
+  debit       Float         @default(0)
+  credit      Float         @default(0)
+  narration   String?
+  date        DateTime      @default(now())
+  status      VoucherStatus @default(COMPLETED)
+
+  voucher Voucher? @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  account Account? @relation(fields: [accountId], references: [id])
+  store   Store    @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([voucherId])
+  @@index([accountId])
+  @@index([date])
+}
+
+// Barcode scanner / label configuration per store (barcode module)
+model BarcodeConfig {
+  id        Int      @id @default(autoincrement())
+  storeId   Int      @unique
+  config    Json
+  store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

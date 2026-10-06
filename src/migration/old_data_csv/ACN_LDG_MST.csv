@@ -1,0 +1,88 @@
+LDR_ID,LDR_CODE,LDR_NAME,CMP_ID,GRP_ID,LDR_HAS_SUB_LDR,LDR_IS_SUB_LDR,LDR_MST_REF_ID,LDR_STATUS
+101,0,DEFAULT PARTY,101,114,0,0,0,Modified
+103,0,HDFC Bank Terminal,101,167,0,0,0,Modified
+104,0,ICICI Bank Terminal,101,167,0,0,0,Modified
+105,0,AXIS Bank Terminal,101,167,0,0,0,Modified
+106,0,IDBI Bank Terminal,101,167,0,0,0,Modified
+107,0,Cheque Account,101,219,0,0,0,Modified
+110,0,User11,101,217,0,0,0,New
+111,0,Cash Counter1,101,115,0,0,0,Modified
+112,0,Cash Account,101,115,0,0,0,New
+113,0,CashDiscount A/c,101,218,0,0,0,New
+114,0,Old Purchase Credit A/c,101,217,0,0,0,New
+115,0,Gold Ornament Sales A/c,101,145,0,0,0,New
+116,0,Silver Ornament Sales A/c,101,145,0,0,0,New
+117,0,Branded Gold Ornament Sales A/c,101,146,0,0,0,New
+118,0,Precious Stone Gold Ornament Sales A/c,101,147,0,0,0,Modified
+119,0,Branded Precious Stone Gold Ornament Sales A/c,101,148,0,0,0,New
+120,0,Precious Stone Sales A/c,101,149,0,0,0,New
+121,0,Accessories Sales A/c,101,150,0,0,0,New
+122,0,Gold Ornament Sale Tax Payble A/c,101,152,0,0,0,Modified
+123,0,Silver Ornament Sale Tax Payble A/c,101,152,0,0,0,Modified
+124,0,Branded Gold Ornament Sale Tax Payble A/c,101,153,0,0,0,Modified
+125,0,Precious Stone Ornament Sale Tax Payble A/c,101,154,0,0,0,New
+126,0,Branded Precious Stone Gold ornament Sale Tax Payble A/c,101,155,0,0,0,New
+127,0,Precious Stone Sale Tax Payble A/c,101,156,0,0,0,New
+128,0,Accessories Sale Tax Payble A/c,101,157,0,0,0,New
+129,0,Old Gold Purchase A/c,101,159,0,0,0,Modified
+130,0,Old Silver Purchase A/c,101,159,0,0,0,Modified
+131,0,Gold Ornament Tax Invoice A/c,101,166,0,0,0,New
+132,0,Silver Ornament Tax Invoice A/c,101,166,0,0,0,New
+133,0,Branded Gold Ornament Tax Invoice A/c,101,171,0,0,0,New
+134,0,Precious Stone Gold Ornament Tax Invoice A/c,101,172,0,0,0,New
+135,0,Branded Precious Stone Gold Ornament Tax Invoice A/c,101,173,0,0,0,New
+136,0,Precious Stone Tax Invoice A/c,101,174,0,0,0,New
+137,0,Accessories Tax Invoice A/c,101,175,0,0,0,New
+138,0,Advance Adjusteded A/c,101,117,0,0,0,New
+139,0,Retail Invoice Return Credit A/c,101,117,0,0,0,New
+140,0,SBI Terminal,101,167,0,0,0,New
+141,0,Federal Bank Terminal,101,167,0,0,0,New
+142,0,Electricity expenses,101,112,0,0,0,Modified
+143,0,Bank Charges,101,112,0,0,0,New
+144,0,Telephone Exp.,101,112,0,0,0,New
+145,0,Sale tax,101,108,0,0,0,New
+146,0,Bullion Purchase(Gold),101,124,0,0,0,New
+147,0,Advertisement Expenses,101,112,0,0,0,New
+148,0,TDS Payable,101,108,0,0,0,New
+149,0,Hall Marking Charges,101,112,0,0,0,New
+150,0,RoundOff A/c,101,221,0,0,0,New
+151,0,New Ledger,101,114,0,0,0,New
+152,0,abc,101,220,0,0,0,New
+1328,21,HOME(Back Office),101,109,0,0,0,New
+1329,0,Raju Bhai,101,114,0,0,0,New
+1330,0,Rama Sahoo,101,217,0,0,0,New
+1331,0,JAGADAMBA,101,114,0,0,0,Modified
+1332,0,K.K,101,114,0,0,0,Modified
+1333,0,TRIJAL,101,114,0,0,0,Modified
+1334,0,New Ledger,101,114,0,0,0,New
+1335,0,XX LDR,101,220,0,0,0,New
+1336,0,YY LDR,101,114,0,0,0,Modified
+1337,0,New Ledger,101,114,0,0,0,New
+1338,0,New Silver Ornament Purchase A/C,101,160,0,0,0,New
+1339,0,New Gold Ornament Purchase A/C,101,160,0,0,0,New
+1340,0,rashmi,101,113,0,0,0,New
+1341,0,xxx,101,220,0,0,0,New
+1342,0,xxx,101,220,0,0,0,New
+1343,0,YYY,101,220,0,0,0,New
+1344,0,xxx,101,220,0,0,0,New
+1345,0,YYY,101,220,0,0,0,New
+1346,0,UHKHKH,101,220,0,0,0,New
+1347,0,J PANIGRAHI,101,220,0,0,0,New
+1348,0,J PANIGRAHI,101,220,0,0,0,New
+1349,0,abdul sattar,101,220,0,0,0,New
+1350,0,abdul sattar,101,220,0,0,0,New
+1351,0,J PANIGRAHI,101,220,0,0,0,New
+1352,0,Phone Pay,101,167,0,0,0,Modified
+1353,0,SHIVANI SRIVASTAV,101,220,0,0,0,New
+1354,0,BANALAXMI MOHANTY,101,220,0,0,0,New
+1355,0,BHAGYASHREE PATRA,101,220,0,0,0,New
+2355,0,SUMITRA JENA,101,220,0,0,0,New
+2356,0,SUMITRA JENA,101,220,0,0,0,New
+2357,0,SUMITRA JENA,101,220,0,0,0,New
+2358,0,SUMITRA JENA,101,220,0,0,0,New
+2359,0,SANGRAM KESARI KHUNTIA,101,220,0,0,0,New
+2360,0,PRAKASH KUMAR,101,220,0,0,0,New
+2361,0,LALATENDEU SWAIN,101,220,0,0,0,New
+2362,0,ANUBHUTI SAHOO,101,220,0,0,0,New
+2363,0,ANUBHUTI SAHOO,101,220,0,0,0,New
+2364,0,HDJ JEWEL PRIVATE LIMITED,101,217,0,0,0,New
