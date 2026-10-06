@@ -53,7 +53,7 @@ const trustProxy = process.env.TRUST_PROXY;
 app.set("trust proxy", trustProxy === undefined || trustProxy === "" || trustProxy === "false" ? false : (/^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy));
 
 const allowedOrigins = (process.env.CORS_ORIGINS ||
-  "http://localhost:5173,http://localhost:4173,https://binayak-frontend.vercel.app")
+  "http://localhost:5173,http://localhost:4173,https://binayak-jewellery-frontend-v3.vercel.app")
   .split(",").map((o) => o.trim()).filter(Boolean);
 app.use(
   cors({
