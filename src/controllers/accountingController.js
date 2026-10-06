@@ -11,6 +11,7 @@ const fail = (res, error, label) => {
   return res.status(status >= 500 ? 500 : status).json({ success: false, message: safeMessage(error) });
 };
 
+
 const noStore = (res) => res.status(400).json({ success: false, message: "Please select a store." });
 
 const pdfUrl = (voucher, storeId) => `/api/accounting/vouchers/${voucher.id}/downloadPdf?storeId=${storeId}`;
