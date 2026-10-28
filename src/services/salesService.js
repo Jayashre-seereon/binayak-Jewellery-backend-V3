@@ -53,7 +53,7 @@ const withSaleItemUnits = (sale) => ({
         ...item,
         unit: "₹",
         weightUnit: "gm",
-        rateUnit: "₹/gm",
+        rateUnit: "₹/piece",
         makingChargeUnit: item?.makingChargeType === "PER_GRAM" ? "₹/gm" : item?.makingChargeType === "PERCENT" ? "%" : "₹",
         grossWeightUnit: "gm",
         stoneWeightUnit: "gm",
@@ -97,6 +97,7 @@ const parseLine = (item, index) => {
   if (!makingChargeType) throw new AppError(`Line ${n}: making charge type "${item.makingChargeType}" is not supported.`);
   return {
     inventoryId: parseId(item.inventoryId, `inventory item on line ${n}`),
+    pieces: toNumber(item.pieces ?? 1, { field: `Line ${n} quantity`, int: true, min: 1, max: 100000 }),
     rate: toMoney(item.rate, { field: `Line ${n} rate`, max: MAX_RATE }),
     makingChargeType,
     makingChargeRate: toNumber(item.makingChargeRate ?? item.makingChargePercent, {
@@ -166,44 +167,53 @@ const pieceCode = (inv) => inv.barcodeNo || inv.tagNo || inv.inventoryCode || `#
  * Row locks taken here make a concurrent sale of the same piece wait and then fail (count 0).
  * Ids are processed in ascending order so two multi-item sales never deadlock.
  */
-const claimInventory = async (tx, inventoryIds, storeId) => {
-  for (const id of [...inventoryIds].sort((a, b) => a - b)) {
+const claimInventory = async (tx, lines, storeId) => {
+  for (const line of [...lines].sort((a, b) => a.inventoryId - b.inventoryId)) {
+    const id = line.inventoryId;
+    const inv = await tx.inventory.findFirst({ where: { id, storeId }, select: { id: true, status: true, purchaseType: true, pieces: true, availablePieces: true, barcodeNo: true, tagNo: true, inventoryCode: true } });
+    if (!inv) throw new AppError("Selected inventory item was not found in this store. Please refresh and try again.", 404);
+    const available = Number(inv.availablePieces ?? (inv.status === "AVAILABLE" ? inv.pieces ?? 1 : 0));
+    if (inv.purchaseType === "OLD") throw new AppError(`Item "${pieceCode(inv)}" is old / scrap gold bought from a customer and cannot be billed as stock.`);
+    if (inv.status !== "AVAILABLE" || line.pieces > available) {
+      throw new AppError(`Item "${pieceCode(inv)}" has ${available} Pcs available; requested ${line.pieces} Pcs.`, 409);
+    }
+    const remaining = available - line.pieces;
     const claimed = await tx.inventory.updateMany({
-      where: { id, storeId, status: "AVAILABLE", purchaseType: { not: "OLD" } },
-      data: { status: "SOLD" },
+      where: { id, storeId, status: "AVAILABLE", availablePieces: available },
+      data: { availablePieces: remaining, status: remaining === 0 ? "SOLD" : "AVAILABLE" },
     });
     if (claimed.count === 1) continue;
 
-    const inv = await tx.inventory.findFirst({
+    const current = await tx.inventory.findFirst({
       where: { id, storeId },
       select: { id: true, status: true, purchaseType: true, barcodeNo: true, tagNo: true, inventoryCode: true },
     });
-    if (!inv) throw new AppError("Selected inventory item was not found in this store. Please refresh the page and try again.", 404);
-    if (inv.purchaseType === "OLD") {
-      throw new AppError(`Item "${pieceCode(inv)}" is old / scrap gold bought from a customer and cannot be billed as stock.`);
+    if (!current) throw new AppError("Selected inventory item was not found in this store. Please refresh the page and try again.", 404);
+    if (current.purchaseType === "OLD") {
+      throw new AppError(`Item "${pieceCode(current)}" is old / scrap gold bought from a customer and cannot be billed as stock.`);
     }
-    if (inv.status === "AVAILABLE") throw new AppError(`Item "${pieceCode(inv)}" was just billed at another counter. Please refresh.`, 409);
-    throw new AppError(`Inventory item "${pieceCode(inv)}" is already ${inv.status.toLowerCase()} and cannot be sold.`, 409);
+    if (current.status === "AVAILABLE") throw new AppError(`Item "${pieceCode(current)}" stock changed at another counter. Please refresh.`, 409);
+    throw new AppError(`Inventory item "${pieceCode(current)}" is already ${current.status.toLowerCase()} and cannot be sold.`, 409);
   }
 };
 
 /** Line amounts, all server-side. Weights and pieces come from the inventory record. */
 const buildSaleLine = (line, inventory, index) => {
-  const grossWeight = roundWeight(inventory.grossWeight);
-  const stoneWeight = roundWeight(inventory.stoneWeight);
-  const netWeight = roundWeight(inventory.netWeight ?? Math.max(0, grossWeight - stoneWeight));
-  const pieces = Math.max(1, Number.parseInt(inventory.pieces, 10) || 1);
+  const stockPieces = Math.max(1, Number.parseInt(inventory.pieces, 10) || 1);
+  const pieces = line.pieces;
+  const fraction = pieces / stockPieces;
+  const grossWeight = roundWeight(Number(inventory.grossWeight) * fraction);
+  const stoneWeight = roundWeight(Number(inventory.stoneWeight) * fraction);
+  const netWeight = roundWeight(Number(inventory.netWeight ?? Math.max(0, Number(inventory.grossWeight) - Number(inventory.stoneWeight))) * fraction);
 
-  const metalAmount = roundMoney(netWeight * line.rate);
+  const metalAmount = roundMoney(pieces * line.rate);
   let makingCharges;
-  if (line.makingChargesInput > 0 && line.makingChargeRate === 0) {
-    makingCharges = line.makingChargesInput;
-  } else if (line.makingChargeType === "PERCENT") {
+  if (line.makingChargeType === "PERCENT") {
     makingCharges = roundMoney((metalAmount * line.makingChargeRate) / 100);
   } else if (line.makingChargeType === "PER_GRAM") {
     makingCharges = roundMoney(netWeight * line.makingChargeRate);
   } else {
-    makingCharges = roundMoney(line.makingChargesInput || line.makingChargeRate);
+    makingCharges = roundMoney(line.makingChargeRate * pieces);
   }
 
   const lineValue = roundMoney(metalAmount + makingCharges + line.stoneAmount + line.hallmarkCharges + line.otherCharges);
@@ -447,7 +457,7 @@ export const createSaleService = async (data, storeId, user = null) => {
   return prisma.$transaction(
     async (tx) => {
       // ---- 2. claim stock first (the double-sale guard), then the invoice number
-      await claimInventory(tx, inventoryIds, numericStoreId);
+      await claimInventory(tx, lines, numericStoreId);
       const invoiceNo = await generateSaleInvoiceNo(numericStoreId, saleDate, tx);
 
       const inventoryRows = await tx.inventory.findMany({
@@ -623,7 +633,26 @@ export const createSaleService = async (data, storeId, user = null) => {
       }
 
       const fresh = await getSaleByIdRepo(sale.id, numericStoreId, tx);
-      return withSaleItemUnits(fresh);
+      const result = withSaleItemUnits(fresh);
+      result.stockAlerts = [];
+      const keys = [...new Map(saleItems.map((line) => {
+        const inv = byId.get(line.inventoryId);
+        const key = inv.productId ? `product:${inv.productId}` : `item:${inv.itemId || "none"}`;
+        return [key, { productId: inv.productId, itemId: inv.itemId, name: inv.product?.name || inv.item?.name || "Stock" }];
+      })).values()];
+      for (const key of keys) {
+        const where = {
+          storeId: numericStoreId,
+          status: "AVAILABLE",
+          purchaseType: { not: "OLD" },
+          ...(key.productId ? { productId: key.productId } : { itemId: key.itemId }),
+        };
+        const total = await tx.inventory.aggregate({ where, _sum: { availablePieces: true } });
+        const available = Number(total._sum.availablePieces || 0);
+        if (available === 0) result.stockAlerts.push({ type: "SOLD_OUT", name: key.name, availableQuantity: 0 });
+        else if (available <= 50) result.stockAlerts.push({ type: "LOW_STOCK", name: key.name, availableQuantity: available });
+      }
+      return result;
     },
     {
       maxWait: 60000,
@@ -647,7 +676,7 @@ export const cancelSaleService = async (id, storeId, { reason } = {}, user = nul
     async (tx) => {
       const sale = await tx.sale.findFirst({
         where: { id: saleId, storeId: sid },
-        include: { items: { select: { inventoryId: true } }, advanceAdjustments: true, oldGolds: true },
+        include: { items: { select: { inventoryId: true, pieces: true } }, advanceAdjustments: true, oldGolds: true },
       });
       if (!sale) throw new AppError("Sale record not found.", 404);
       if (sale.status === "CANCELLED") throw new AppError(`Invoice ${sale.invoiceNo} is already cancelled.`);
@@ -677,12 +706,12 @@ export const cancelSaleService = async (id, storeId, { reason } = {}, user = nul
       });
       if (flipped.count === 0) throw new AppError(`Invoice ${sale.invoiceNo} is already cancelled.`, 409);
 
-      const inventoryIds = sale.items.map((it) => it.inventoryId);
-      if (inventoryIds.length) {
-        await tx.inventory.updateMany({
-          where: { id: { in: inventoryIds }, storeId: sid, status: "SOLD" },
-          data: { status: "AVAILABLE" },
-        });
+      for (const item of sale.items) {
+        const inventory = await tx.inventory.findFirst({ where: { id: item.inventoryId, storeId: sid }, select: { pieces: true, availablePieces: true } });
+        if (!inventory) continue;
+        const total = Number(inventory.pieces || 1);
+        const restored = Math.min(total, Number(inventory.availablePieces || 0) + Number(item.pieces || 1));
+        await tx.inventory.updateMany({ where: { id: item.inventoryId, storeId: sid }, data: { availablePieces: restored, status: "AVAILABLE" } });
       }
 
       const reversalNote = `Reversed: sale ${sale.invoiceNo} cancelled (${why})`;

@@ -108,7 +108,7 @@ export const getDashboardSummaryService = async (storeId, period) => {
   const { start, end } = getDateRange(normalizedPeriod);
   const inPeriod = { gte: start, lt: end };
 
-  const [rateRows, salesAgg, soldByMetalRows, salesList, stockGroups, advances, supplierDues, recentSales] = await Promise.all([
+  const [rateRows, salesAgg, soldByMetalRows, salesList, stockRows, advances, supplierDues, recentSales] = await Promise.all([
     // Latest rate per metal/purity/grade (ordered so the first row of each combination is the newest).
     prisma.rateMaster.findMany({
       // A non-positive rate is invalid input, never a board rate.
@@ -148,11 +148,14 @@ export const getDashboardSummaryService = async (storeId, period) => {
       where: { storeId: sid, status: "COMPLETED", saleDate: inPeriod },
       select: { saleDate: true, subTotal: true },
     }),
-    prisma.inventory.groupBy({
-      by: ["metalId"],
-      where: { storeId: sid, status: "AVAILABLE" },
-      _sum: { pieces: true, grossWeight: true, netWeight: true },
-      _count: { _all: true },
+    prisma.inventory.findMany({
+      where: { storeId: sid, purchaseType: { not: "OLD" } },
+      select: {
+        id: true, metalId: true, productId: true, itemId: true, status: true, pieces: true, availablePieces: true,
+        grossWeight: true, netWeight: true,
+        product: { select: { name: true } },
+        item: { select: { name: true } },
+      },
     }),
     prisma.advanceReceive.aggregate({
       _sum: { balanceAmount: true },
@@ -182,6 +185,53 @@ export const getDashboardSummaryService = async (storeId, period) => {
       take: 6,
     }),
   ]);
+
+  const stockGroupsMap = new Map();
+  const stockAlertsMap = new Map();
+  for (const row of stockRows) {
+    const total = Math.max(0, Number(row.pieces || 1));
+    const available = row.status === "AVAILABLE" ? Math.max(0, Number(row.availablePieces ?? total)) : 0;
+    const stockKey = row.productId ? `product:${row.productId}` : row.itemId ? `item:${row.itemId}` : `inventory:${row.id}`;
+    const alert = stockAlertsMap.get(stockKey) || {
+      key: stockKey,
+      name: row.product?.name || row.item?.name || "Unspecified stock",
+      totalStock: 0,
+      available: 0,
+      sold: 0,
+    };
+    alert.totalStock += total;
+    alert.available += available;
+    alert.sold += row.status === "SOLD" ? total : row.status === "AVAILABLE" ? Math.max(0, total - available) : 0;
+    stockAlertsMap.set(stockKey, alert);
+
+    const metalKey = row.metalId ?? null;
+    const group = stockGroupsMap.get(metalKey) || { metalId: metalKey, pieces: 0, grossWeight: 0, netWeight: 0, tags: 0 };
+    const share = total > 0 ? available / total : 0;
+    group.pieces += available;
+    group.grossWeight += Number(row.grossWeight || 0) * share;
+    group.netWeight += Number(row.netWeight || 0) * share;
+    if (available > 0) group.tags += 1;
+    stockGroupsMap.set(metalKey, group);
+  }
+  const stockGroups = [...stockGroupsMap.values()].map((g) => ({
+    ...g,
+    _sum: { pieces: g.pieces, grossWeight: g.grossWeight, netWeight: g.netWeight },
+    _count: { _all: g.tags },
+  }));
+  const stockAlerts = [...stockAlertsMap.values()]
+    .map((entry) => ({
+      name: entry.name,
+      totalStock: entry.totalStock,
+      available: entry.available,
+      sold: entry.sold,
+      status: entry.available === 0 && entry.sold >= entry.totalStock
+        ? "SOLD_OUT"
+        : entry.available > 0 && entry.available <= 50
+          ? "LOW_STOCK"
+          : "AVAILABLE",
+    }))
+    .filter((entry) => entry.status !== "AVAILABLE")
+    .sort((a, b) => (a.status === b.status ? a.available - b.available : a.status === "SOLD_OUT" ? -1 : 1));
 
   const metalIds = [...new Set([...stockGroups.map((g) => g.metalId), ...soldByMetalRows.map((r) => r.metalId)].filter(Boolean))];
   const metals = metalIds.length
@@ -259,6 +309,7 @@ export const getDashboardSummaryService = async (storeId, period) => {
     liveRates: buildLiveRates(rates),
     sales,
     inventory,
+    stockAlerts,
     stockByMetal,
     customerAdvances: {
       totalAvailableBalance: roundMoney(advances._sum.balanceAmount || 0),

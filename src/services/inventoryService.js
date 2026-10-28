@@ -101,6 +101,7 @@ export const createInventoryInTx = async (tx, purchaseItem, storeIdNumber, { bar
     assayCertNo: asString(purchaseItem.assayCertNo),
 
     status: initialStatusFor(type),
+    availablePieces: initialStatusFor(type) === "AVAILABLE" ? Math.max(1, Number(purchaseItem.pieces || 1)) : 0,
 
     itemPhoto: purchaseItem.itemPhoto,
     narration: purchaseItem.narration,
@@ -360,7 +361,8 @@ export const updateInventoryStatusService = async (
       Number(storeId),
       target,
       inventory.status,
-      { ...extra, statusLog }
+      { ...extra, statusLog },
+      target === "AVAILABLE" ? Math.max(1, Number(inventory.pieces || 1)) : undefined
     );
 
   if (result.count === 0) {

@@ -1,0 +1,1 @@
+-- No-op. The availablePieces column is added by the preceding migration.

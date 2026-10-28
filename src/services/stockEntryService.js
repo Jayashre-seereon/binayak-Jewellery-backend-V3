@@ -38,6 +38,11 @@ const normaliseLine = (raw, i, mode) => {
   if (huid && !/^[A-Za-z0-9]{1,20}$/.test(huid)) throw rowError(i, "HUID must be letters and digits only.");
 
   const money = mode === "PURCHASE";
+  const saleRate = raw.rate === undefined || raw.rate === null || raw.rate === ""
+    ? null
+    : toNumber(raw.rate, { field: `Row ${i + 1}: rate per piece`, max: 1e7 });
+  const netWeight = Number(raw.grossWeight || 0) - Number(raw.stoneWeight || 0);
+  const pieces = Math.max(1, Number.parseInt(raw.pieces, 10) || 1);
   return {
     purchaseLine: {
       itemId,
@@ -47,7 +52,7 @@ const normaliseLine = (raw, i, mode) => {
       grossWeight: raw.grossWeight,
       stoneWeight: raw.stoneWeight,
       huidNo: huid,
-      rate: money ? raw.rate : 0,
+      rate: money && saleRate !== null && netWeight > 0 ? saleRate * pieces / netWeight : 0,
       makingCharges: money ? raw.makingCharges : 0,
       stoneAmount: money ? raw.stoneAmount : 0,
       hallmarkCharges: money ? raw.hallmarkCharges : 0,
@@ -56,6 +61,7 @@ const normaliseLine = (raw, i, mode) => {
     barcode,
     saleMakingType,
     saleMakingRate,
+    saleRate,
   };
 };
 
@@ -128,6 +134,7 @@ export const createStockEntry = async (storeId, body = {}) => {
       const line = lines[i];
       const extraDetails = {
         source: "STOCK_ENTRY",
+        ...(line.saleRate !== null ? { saleRate: line.saleRate, saleRateUnit: "PIECE" } : {}),
         ...(line.saleMakingType ? { makingChargeType: line.saleMakingType, makingChargeRate: line.saleMakingRate ?? 0 } : {}),
         ...(line.barcode ? { adoptedBarcode: true } : {}),
       };

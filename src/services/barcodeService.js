@@ -242,7 +242,13 @@ const findPieceByCode = async (storeId, code) => {
 };
 
 /** Latest sale rate: (metal, purity, grade) → (metal, purity, no grade) → (metal, purity, any grade). */
-export const latestSaleRate = async (storeId, { metalId, purityId, gradeId }) => {
+export const latestSaleRate = async (storeId, piece) => {
+  const metalId = piece.metalId ?? piece.product?.metalId;
+  const purityId = piece.purityId ?? piece.item?.purityId ?? piece.product?.purityId;
+  const gradeId = piece.gradeId ?? piece.product?.gradeId;
+  const details = { ...asObject(piece.purchaseItem?.extraDetails), ...asObject(piece.extraDetails) };
+  const savedRate = Number(details.saleRate ?? 0);
+  if (savedRate > 0) return { rate: savedRate, rateSource: "STOCK_ENTRY", rateId: null, rateDate: null };
   if (!metalId || !purityId) return { rate: 0, rateSource: "NONE", rateId: null, rateDate: null };
   const base = { storeId, metalId, purityId, effectiveDate: { lte: new Date() } };
   const orderBy = [{ effectiveDate: "desc" }, { updatedAt: "desc" }, { id: "desc" }];
@@ -252,7 +258,10 @@ export const latestSaleRate = async (storeId, { metalId, purityId, gradeId }) =>
   attempts.push([base, "RATE_MASTER_PURITY"]);
   for (const [where, rateSource] of attempts) {
     const r = await prisma.rateMaster.findFirst({ where, orderBy, select: { id: true, saleRate: true, effectiveDate: true } });
-    if (r && Number(r.saleRate) > 0) return { rate: Number(r.saleRate), rateSource, rateId: r.id, rateDate: r.effectiveDate };
+    if (r && Number(r.saleRate) > 0) {
+      const perPiece = Number(r.saleRate) * Number(piece.netWeight || 0) / Math.max(1, Number(piece.pieces || 1));
+      return { rate: perPiece, rateSource, rateId: r.id, rateDate: r.effectiveDate };
+    }
   }
   return { rate: 0, rateSource: "NONE", rateId: null, rateDate: null };
 };
@@ -305,7 +314,8 @@ const buildBillingLine = async (storeId, piece) => {
     purityName,
     purity: piece.purity ?? piece.grade?.percentage ?? null,
     gradeName: piece.grade?.name || null,
-    pieces: piece.pieces ?? 1,
+    pieces: piece.availablePieces ?? piece.pieces ?? 1,
+    availablePieces: piece.availablePieces ?? piece.pieces ?? 1,
     grossWeight: Number(piece.grossWeight || 0),
     stoneWeight: Number(piece.stoneWeight || 0),
     netWeight: Number(piece.netWeight || 0),
@@ -335,6 +345,7 @@ const publicPiece = (p) => ({
   status: p.status,
   purchaseType: p.purchaseType,
   pieces: p.pieces,
+  availablePieces: p.availablePieces ?? p.pieces ?? 1,
   grossWeight: p.grossWeight,
   stoneWeight: p.stoneWeight,
   netWeight: p.netWeight,

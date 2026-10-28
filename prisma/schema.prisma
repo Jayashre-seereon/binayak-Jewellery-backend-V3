@@ -554,6 +554,7 @@ model Inventory {
   stoneWeight Float @default(0)
   netWeight   Float @default(0)
   pieces      Int?  @default(1)
+  availablePieces Int @default(1)
 
   dustWeight      Float @default(0)
   deductionWeight Float @default(0)

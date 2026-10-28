@@ -212,7 +212,8 @@ export const updateInventoryStatusRepo = async (
   storeId,
   status,
   fromStatus = undefined,
-  extraDetails = undefined
+  extraDetails = undefined,
+  availablePieces = undefined
 ) => {
   return prisma.inventory.updateMany({
     where: {
@@ -222,6 +223,7 @@ export const updateInventoryStatusRepo = async (
     },
     data: {
       status,
+      ...(availablePieces !== undefined ? { availablePieces } : {}),
       ...(extraDetails !== undefined ? { extraDetails } : {}),
     },
   });
