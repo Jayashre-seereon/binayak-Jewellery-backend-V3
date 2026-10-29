@@ -152,9 +152,12 @@ export const getDashboardSummaryService = async (storeId, period) => {
       where: { storeId: sid, purchaseType: { not: "OLD" } },
       select: {
         id: true, metalId: true, productId: true, itemId: true, status: true, pieces: true, availablePieces: true,
+        inventoryCode: true, barcodeNo: true, tagNo: true,
         grossWeight: true, netWeight: true,
         product: { select: { name: true } },
         item: { select: { name: true } },
+        purchaseItem: { select: { productId: true, itemId: true, pieces: true, product: { select: { name: true } }, item: { select: { name: true } } } },
+        saleItems: { where: { sale: { storeId: sid, status: "COMPLETED" } }, select: { pieces: true } },
       },
     }),
     prisma.advanceReceive.aggregate({
@@ -187,22 +190,36 @@ export const getDashboardSummaryService = async (storeId, period) => {
   ]);
 
   const stockGroupsMap = new Map();
-  const stockAlertsMap = new Map();
+  const lowStockByKey = new Map();
+  const lowStockAlerts = [];
   for (const row of stockRows) {
-    const total = Math.max(0, Number(row.pieces || 1));
-    const available = row.status === "AVAILABLE" ? Math.max(0, Number(row.availablePieces ?? total)) : 0;
-    const stockKey = row.productId ? `product:${row.productId}` : row.itemId ? `item:${row.itemId}` : `inventory:${row.id}`;
-    const alert = stockAlertsMap.get(stockKey) || {
-      key: stockKey,
-      name: row.product?.name || row.item?.name || "Unspecified stock",
-      totalStock: 0,
-      available: 0,
-      sold: 0,
-    };
-    alert.totalStock += total;
-    alert.available += available;
-    alert.sold += row.status === "SOLD" ? total : row.status === "AVAILABLE" ? Math.max(0, total - available) : 0;
-    stockAlertsMap.set(stockKey, alert);
+    const stockItem = row.purchaseItem;
+    const total = Math.max(0, Number(row.pieces ?? stockItem?.pieces ?? 1));
+    const soldFromLedger = row.saleItems.reduce((sum, saleItem) => sum + Math.max(0, Number(saleItem.pieces || 0)), 0);
+    // The sale ledger remains authoritative for older records whose availablePieces
+    // balance was initialized incorrectly; current balance handles cancellations.
+    const available = row.status === "AVAILABLE"
+      ? Math.max(0, Math.min(total, Math.min(Number(row.availablePieces ?? total), total - soldFromLedger)))
+      : 0;
+    const name = row.product?.name || row.item?.name || stockItem?.product?.name || stockItem?.item?.name || "Unspecified stock";
+    const sold = Math.max(0, total - available);
+    const productId = row.productId ?? stockItem?.productId;
+    const itemId = row.itemId ?? stockItem?.itemId;
+    const stockKey = productId ? `product:${productId}` : itemId ? `item:${itemId}` : `inventory:${row.id}`;
+    if (available === 0 || available <= 50) {
+      const alert = lowStockByKey.get(stockKey) || {
+        inventoryId: row.id,
+        name,
+        inventoryCode: row.barcodeNo || row.tagNo || row.inventoryCode,
+        totalStock: 0,
+        available: 0,
+        sold: 0,
+      };
+      alert.totalStock += total;
+      alert.available += available;
+      alert.sold += sold;
+      lowStockByKey.set(stockKey, alert);
+    }
 
     const metalKey = row.metalId ?? null;
     const group = stockGroupsMap.get(metalKey) || { metalId: metalKey, pieces: 0, grossWeight: 0, netWeight: 0, tags: 0 };
@@ -213,25 +230,20 @@ export const getDashboardSummaryService = async (storeId, period) => {
     if (available > 0) group.tags += 1;
     stockGroupsMap.set(metalKey, group);
   }
+  for (const alert of lowStockByKey.values()) {
+    if (alert.available === 0) alert.status = "SOLD_OUT";
+    else if (alert.available <= 50) alert.status = "LOW_STOCK";
+    else continue;
+    lowStockAlerts.push(alert);
+  }
   const stockGroups = [...stockGroupsMap.values()].map((g) => ({
     ...g,
     _sum: { pieces: g.pieces, grossWeight: g.grossWeight, netWeight: g.netWeight },
     _count: { _all: g.tags },
   }));
-  const stockAlerts = [...stockAlertsMap.values()]
-    .map((entry) => ({
-      name: entry.name,
-      totalStock: entry.totalStock,
-      available: entry.available,
-      sold: entry.sold,
-      status: entry.available === 0 && entry.sold >= entry.totalStock
-        ? "SOLD_OUT"
-        : entry.available > 0 && entry.available <= 50
-          ? "LOW_STOCK"
-          : "AVAILABLE",
-    }))
-    .filter((entry) => entry.status !== "AVAILABLE")
-    .sort((a, b) => (a.status === b.status ? a.available - b.available : a.status === "SOLD_OUT" ? -1 : 1));
+  const stockAlerts = [
+    ...lowStockAlerts,
+  ].sort((a, b) => (a.status === b.status ? a.available - b.available : a.status === "SOLD_OUT" ? -1 : 1));
 
   const metalIds = [...new Set([...stockGroups.map((g) => g.metalId), ...soldByMetalRows.map((r) => r.metalId)].filter(Boolean))];
   const metals = metalIds.length
